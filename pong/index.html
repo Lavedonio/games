@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-100">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="description" content="Jogo Pong">
+	<meta name="keywords" content="Game,Jogo,Pong,Atari">
+	<meta name="author" content="Daniel Lavedonio de Lima">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+	<link href="https://fonts.googleapis.com/css?family=Dancing+Script|Poppins&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+
+	<link rel="stylesheet" type="text/css" href="css/projects.css">
+	<link rel="stylesheet" type="text/css" href="css/pong.css">
+
+	<!-- Font pack: http://www.mattlag.com/bitfonts/ -->
+	<!-- All font types for all Browsers: https://stackoverflow.com/questions/24990554/how-to-include-a-font-ttf-using-css -->
+	<style>
+		@font-face {
+			font-family: "Bit5x3";
+			src: url('fonts/bit5x3/bit5x3.eot'); /* IE9 Compat Modes */
+			src: url('fonts/bit5x3/bit5x3.eot?#iefix') format("embedded-opentype"), /* IE6-IE8 */
+				url('fonts/bit5x3/bit5x3.otf') format("opentype"), /* Open Type Font */
+				url('fonts/bit5x3/bit5x3.svg') format("svg"), /* Legacy iOS */
+				url('fonts/bit5x3/bit5x3.ttf') format("truetype"), /* Safari, Android, iOS */
+				url('fonts/bit5x3/bit5x3.woff') format("woff"), /* Modern Browsers */
+				url('fonts/bit5x3/bit5x3.woff2') format("woff2"); /* Modern Browsers */
+			font-weight: normal;
+			font-style: normal;
+		}
+	</style>
+
+	<title>Pong = Projetos - Daniel Lavedonio de Lima</title>
+
+</head>
+<body class="d-flex flex-column h-100">
+	<header>
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark custom-navbar">
+			<div class="container">
+				<a class="navbar-brand brand-font main-navbar-font" href="#">Lavedonio</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#vertical-navbar" aria-controls="vertical-navbar" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="vertical-navbar">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item nav-list">
+							<a class="nav-link disabled" style="color: #888;" href="#" tabindex="-1" aria-disabled="true">Projeto: Pong</a>
+						</li>
+						<li class="nav-item nav-list">
+							<em><a class="nav-link" style="color: white;" href="https://www.lavedonio.com.br/projetos/?utm_source=pong-game&utm_medium=project-sourcecode&utm_campaign=source-code">Outros projetos</a></em>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<!-- Page content -->
+	<main role="main" class="flex-shrink-0">
+		<section class="main-img background-img font-poppins light-color-text d-flex align-items-stretch" style="background-image: linear-gradient(63deg, rgba(6, 8, 31, 0.8) 50%, rgba(255, 255, 255, 0.3) 100%), url(img/pong.jpg);">
+			<div class="container main-img-padding pb-2 d-flex align-items-end">
+				<div class="d-block">
+					<h1 class="light-text content-title text-break">Pong</h1>
+					<div class="line" style="border-color: #E7F6FF;"></div>
+					<p class="light-text">A recriação do maior clássico dos videogames, agora também para telas touch.</p>
+				</div>
+			</div>
+		</section>
+		<article class="pt-3 pb-5 dark-background">
+			<div class="container light-color-text">
+					<div class="mt-2">
+						<span class="mx-1">Categorias:</span>
+						<div class="d-inline-block mr-3" style="color: #DE4B4B;">Games</div>
+					</div>
+				<hr>
+				<div class="d-block mb-4">
+					<p class="lead mb-4">Esta é a recriação do primeiro jogo da Atari, feito em 1972, que foi um dos grandes responsáveis pelo nascimento da indústria do videogame como conhecemos.</p>
+
+					<p class="text-center mb-1"><img class="img-fluid sample-gif" src="https://upload.wikimedia.org/wikipedia/commons/6/62/Pong_Game_Test2.gif" alt="Jogo acontecendo no fliperama original"></p>
+					<p class="text-center img-description">Você veria isso se estivesse jogando em 1972</p>
+
+					<p class="article-content">Como queria aprender mais sobre a liguagem de programação <em>Javascript</em> e <em>frontend</em> em geral, decidi ir além do <em>Hello World</em> e recriar esse clássico em HTML5/CSS3 e Javascript modernos. Afinal, se <a href="https://en.wikipedia.org/wiki/Allan_Alcorn" target="_blank" rel="noopener noreferrer">Allan Alcorn</a> conseguiu, quase 40 anos atrás e recém-formado no mesmo curso que eu faço atualmente, fazer em 3 meses esse jogo com chips programáveis a nível de transistor e muita solda, eu consigo fazer no conforto de um computador milhões de vezes mais potente e com o Google para me ajudar.</p>
+
+					<p class="article-content">Quando o jogo foi lançado, precisava de todo um equipamento e circuito digital feito especificamente para rodá-lo. Depois, este jogo passou para diversas gerações de consoles que podiam ser jogados em casa, e finalmente para PC. Várias versões foram feitas, muitas em <i>Flash</i>, mas poucas com implementação moderna.</p>
+
+					<p class="article-content">Para este primeiro jogo, me baseei neste <a href="https://www.udemy.com/code-your-first-game/" target="_blank" rel="noopener noreferrer">curso da Udemy</a>, mas indo além e tornando-o responsível, de forma com que ele possa ser jogado não só no computador, mas também em tablets e smartphones (ou quaisquer dispositivos com telas <i>touch</i> e que consigam acessar essa página).</p>
+
+					<p class="article-content mb-4">Este projeto ainda não está completo. Pretendo ainda implementar outros modos de jogo em breve. Caso queira baixar esses arquivos visite meu <a href="https://github.com/Lavedonio/games">repositório de jogos no GitHub</a>.</p>
+
+					<ul class="nav nav-tabs mb-md-2" id="myTab" role="tablist">
+						<li class="nav-item" role="presentation">
+							<a class="nav-link active" id="classic-tab" data-toggle="tab" href="#classic" role="tab" aria-controls="classic" aria-selected="true">Clássico</a>
+						</li>
+						<li class="nav-item" role="presentation">
+							<a class="nav-link disabled" href="#" role="tab" tabindex="-1" aria-disabled="true"><em>Tênis (em breve)</em></a>
+						</li>
+						<li class="nav-item" role="presentation">
+							<a class="nav-link disabled" href="#" role="tab" tabindex="-1" aria-disabled="true"><em>Futebol (em breve)</em></a>
+						</li>
+					</ul>
+					<div class="tab-content mb-3" id="myTabContent">
+						<div class="tab-pane fade show active" id="classic" role="tabpanel" aria-labelledby="classic-tab">
+							<p>Este é o jogo clássico do Pong (para 1 jogador), no qual você controla a raquete da <strong>esquerda</strong>.</p>
+							<h3>Instruções</h3>
+							<ol>
+								<li>Você deve evitar que a bola passe a sua raquete. Se isso ocorrer, resultará em um ponto para o adversário e vice-versa.</li>
+								<li>Ao ultrapassar a pontuação máxima de 5 pontos (podendo ser alterada nos ajustes abaixo do jogo), quem tiver a maior pontuação ganha.</li>
+								<li>Há 3 níveis de dificuldade (também podendo ser alterado nos ajustes abaixo do jogo), sendo que cada um irá alterar a proporção entre o tamanho da sua raquete em relação a de seu adversário.</li>
+								<li>Para tornar o jogo mais desafiador, com o passar do tempo a bola vai ficando cada vez mais rápida.</li>
+							</ol>
+							<h3>Controles</h3>
+							<p>Se você está usando um mouse, utilize o cursor para guiar a raquete; caso esteja numa tela touch, utilize seu dedo. A raquete irá acompanhar seu cursor/dedo desde que o movimento esteja sendo feito <strong>dentro dos limites da área do jogo</strong> (dentro da borda branca). Recomendo jogar em <strong>tela cheia</strong> clicando/tocando no botão de mesmo nome.</p>
+							<h4>Bom jogo! ;)</h4>
+						</div>
+					</div>
+
+					<p class="article-content mb-5"><strong style="color: #DE4B4B;">Aviso:</strong> para telas <em>touch</em>, você precisará entrar em modo de tela cheia para jogar.</p>
+
+					<p class="text-center mb-3"><a class="btn-fullscreen" id="lockpage" href="#" role="button">Tela cheia</a></p>
+
+					<div id="backgroundfill" class="dark-background"></div>
+					<div id="lockframe" class="mb-3 game dark-background">
+						<div id="closeicon" class="d-none close mx-auto">
+							<span class="light-color-text">Fechar <img src="img/x_icon.svg" class="ml-2" width="24px" alt="Exit Fullscreen"></span>
+						</div>
+						<p class="text-center mx-auto no-space-bottom"><canvas id="gameCanvas" class="mx-auto" width="200" height="150"></canvas></p>
+
+						<div id="controls" class="row mx-auto">
+							<div class="col-sm-12">
+								<p class="lead">Ajustes</p>
+							</div>
+							<div class="col-sm-6">
+								<p>Pontuação máxima:
+									<select id="max-score" class="custom-select custom-select-sm">
+										<option value="1">1 ponto</option>
+										<option value="3">3 pontos</option>
+										<option value="5" selected>5 pontos</option>
+										<option value="10">10 pontos</option>
+										<option value="15">15 pontos</option>
+										<option value="20">20 pontos</option>
+										<option value="0">Sem limite de pontos</option>
+									</select>
+								</p>
+							</div>
+							<div class="col-sm-6">
+								<p>Dificuldade:
+									<select id="difficulty" class="custom-select custom-select-sm">
+										<option value="easy">Fácil</option>
+										<option value="medium" selected>Médio</option>
+										<option value="hard">Difícil</option>
+									</select>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<p class="text-center"><a href="https://www.lavedonio.com.br/projetos/?utm_source=pong-game&utm_medium=project-sourcecode&utm_campaign=source-code" class="btn btn-info btn-lg">Ver mais projetos</a></p>
+			</div>
+		</article>
+	</main>
+
+	<footer class="footer custom-footer mt-auto">
+		<div class="container text-center px-xl-5">
+
+			<div class="d-lg-flex flex-row text-center text-lg-left footer-menu">
+				<div class="d-block mt-md-0 brand-font mr-lg-2 mb-5">
+					<h5 class="footer-menu-brand">Daniel Lavedonio de Lima</h5>
+				</div>
+
+				<div class="d-sm-flex flex-fill flex-row justify-content-around">
+					<div class="d-block mx-lg-5 mt-3 mt-md-0">
+						<h5 class="footer-menu-label"><a href="https://github.com/Lavedonio/" target="_blank" rel="noopener noreferrer">GitHub</a></h5>
+					</div>
+
+					<div class="d-block mx-md-auto pl-md-5 p-lg-0 mx-lg-5 mt-3 mt-md-0">
+						<h5 class="footer-menu-label"><a href="https://www.linkedin.com/in/daniel-lavedonio-de-lima/" target="_blank" rel="noopener noreferrer">LinkedIn</a></h5>
+					</div>
+
+					<div class="d-block mt-3 mt-md-0">
+						<h5 class="footer-menu-label"><a href="https://twitter.com/Lavedonio/" target="_blank" rel="noopener noreferrer">Twitter</a></h5>
+					</div>
+				</div>
+			</div>
+
+			<!-- Créditos -->
+			<span class="d-block mt-1 mb-3 footer-info">
+				Imagem principal retirada do próprio jogo.
+				<br>
+				Fonte <em>Bit5x3</em> usada no jogo cortesia de <a href="http://www.mattlag.com/bitfonts/" target="_blank" rel="noopener noreferrer">Matt LaGrandeur</a>, sob licença <a href="https://en.wikipedia.org/wiki/Creative_Commons" target="_blank" rel="noopener noreferrer"><em>Creative Commons</em></a>.
+				<br>
+				Imagem GIF cortesia de <i>pong74ls</i>, retirado da <a href="https://en.wikipedia.org/wiki/File:Pong_Game_Test2.gif" target="_blank" rel="noopener noreferrer">Wikipedia</a>, sob licença <a href="https://en.wikipedia.org/wiki/Creative_Commons" target="_blank" rel="noopener noreferrer"><em>Creative Commons</em></a>.
+				<br>
+				Ícone para fechamento da tela cheia feito por <a href="https://www.flaticon.com/authors/alfredo-hernandez" title="Alfredo Hernandez" target="_blank" rel="noopener noreferrer">Alfredo Hernandez</a> em <a href="https://www.flaticon.com/" title="Flaticon" target="_blank" rel="noopener noreferrer">Flaticon</a>.
+			</span>
+			<span class="d-block mt-3 footer-info">Este site é um projeto <i>open-source</i>. Veja o código fonte <a href="https://github.com/Lavedonio/site_lavedonio_django/" target="_blank" rel="noopener noreferrer">aqui</a>.</span>
+			<span class="d-block mt-1 footer-info">Daniel Lavedonio de Lima - 2020</span>
+		</div>
+	</footer>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="js/projects.js"></script>
+	<script src="js/pong.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+canvas {
+	border: 1px solid white;
+}
+
+#controls {
+	margin-top: 0;
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background-color: #050505;
+	width: 800px;
+}
+
+.no-space-bottom {
+	margin-bottom: 0;
+}
+
+.game {
+	margin-top: 0.5rem;
+}
