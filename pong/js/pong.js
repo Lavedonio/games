@@ -2,17 +2,17 @@ var canvas;
 var canvasContext;
 var controls;
 var baseTextSize = "32px";
-var DEFAULT_BALL_SPEED;
 
 const SETTINGS_HEIGHT = 150;
 const CANVAS_HEIGHT_PADDING = 70;
+const DEFAULT_WALL_OFFSET = 20;
 
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = 600;
 
 var CURRENT_PADDLE_HEIGHT = 100;
 
-// ------------- Cálculo do Mouse -------------
+// ------------- Cursor Handling Functions -------------
 
 function calculateMousePos(evt) {
 	var rect = canvas.getBoundingClientRect(); // retorna o tamanho e a posição em relação ao canvas dentro da janela visível ao usuário da página (não em relação ao documento HTML como um todo)
@@ -29,16 +29,16 @@ function calculateMousePos(evt) {
 }
 
 function calculateTouchPos(evt) {
-	var rect = canvas.getBoundingClientRect(); // retorna o tamanho e a posição em relação ao canvas dentro da janela visível ao usuário da página (não em relação ao documento HTML como um todo)
+	var rect = canvas.getBoundingClientRect();
 	var root = document.documentElement;
 
 	var e = (typeof evt.originalEvent === 'undefined') ? evt : evt.originalEvent;
 	// Idea from StackOverflow: https://stackoverflow.com/a/41993300/11981524
 	var touch = e.touches[0] || e.changedTouches[0];
 
-	//considera as posições X e Y relativas e não totais, desconsiderando o scroll e os outros elementos da página (texto, parágrafos, divs...)
-	var touchX = touch.pageX - rect.left; // - root.scrollLeft;
-	var touchY = touch.pageY - rect.top; // - root.scrollTop;
+	
+	var touchX = touch.pageX - rect.left;
+	var touchY = touch.pageY - rect.top;
 
 	return {
 		x:touchX,
@@ -46,100 +46,97 @@ function calculateTouchPos(evt) {
 	};
 }
 
-function handleMouseClick(evt, player1, computer, game_settings) {
-	if(!game_settings.game_started) {
-		game_settings.game_started = true;
+function handleMouseClick(evt, ball, player1, computer, game) {
+	if(!game.started) {
+		game.started = true;
+		game.reset(ball, player1, computer);
 	}
 
-	if(game_settings.showingWinScreen) {
+	if(game.showingWinScreen) {
 		player1.score = 0;
 		computer.score = 0;
-		game_settings.showingWinScreen = false;
+		game.showingWinScreen = false;
 	}
 }
 
-// ------------- /Cálculo do Mouse -------------
+// ------------- /Cursor Handling Functions -------------
 
 // -------------- Global functions --------------
 
-function reset_game(ball, player1, computer, game_settings) {
-	var paddle_thickness = computer.thickness;
-
-	ball.reset(true);
-	player1.reset(0);
-	computer.reset(canvas.width - paddle_thickness);
-
-	game_settings.showingWinScreen = false;
-}
-
-function displaySettings(reload, reset, game_settings, ball=null, player1=null, computer=null) {
+function displaySettings(reload, reset, game, ball=null, player1=null, computer=null) {
 	var deviceHeight = document.documentElement.clientHeight;
 	var deviceWidth = document.documentElement.clientWidth;
+	try {
+		var ratio = game.mode_info[game.mode]["canvas_ratio"];  // screen aspect ratio;
+	}
+	catch (e) {
+		var ratio = 0.75;  // default aspect ratio: 3 by 4
+	}
 
 	var available_height = deviceHeight - SETTINGS_HEIGHT - CANVAS_HEIGHT_PADDING;
 
 	if(deviceWidth < 350) {
-		if(available_height < deviceWidth - 50 && (4 * available_height) / 3 < deviceWidth - 50) {
+		if(available_height < deviceWidth - 50 && available_height / ratio < deviceWidth - 50) {
 			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
+			canvas.width = canvas.height / ratio;
 		}
 		else {
 			canvas.width = deviceWidth - 50;
-			canvas.height = 0.75 * canvas.width;
+			canvas.height = ratio * canvas.width;
 		}
 
 		controls.style.width = (canvas.width).toString() + "px";
 		baseTextSize = "20px";
 	}
-	else if(deviceWidth < 575) {
-		if(available_height < deviceWidth - 50 && (4 * available_height) / 3 < deviceWidth - 50) {
+	else if(deviceWidth < 576) {
+		if(available_height < deviceWidth - 50 && available_height / ratio < deviceWidth - 50) {
 			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
+			canvas.width = canvas.height / ratio;
 		}
 		else {
 			canvas.width = deviceWidth - 50;
-			canvas.height = 0.75 * canvas.width;
+			canvas.height = ratio * canvas.width;
 		}
 
 		controls.style.width = (canvas.width).toString() + "px";
 		baseTextSize = "24px";
 	}
-	else if(deviceWidth < 650) {
-		if(available_height < 0.8 * deviceWidth && (4 * available_height) / 3 < 0.8 * deviceWidth) {
+	else if(719 < deviceWidth && deviceWidth < 768) {
+		if(available_height < 0.6 * deviceWidth && available_height / ratio < 0.6 * deviceWidth) {
 			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
-		}
-		else {
-			canvas.width = 0.8 * deviceWidth;
-			canvas.height = 0.75 * canvas.width;
-		}
-
-		controls.style.width = (canvas.width).toString() + "px";
-		baseTextSize = "32px";
-	}
-	else if(deviceWidth < 767) {
-		if(available_height < 0.7 * deviceWidth && (4 * available_height) / 3 < 0.7 * deviceWidth) {
-			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
-		}
-		else {
-			canvas.width = 0.7 * deviceWidth;
-			canvas.height = 0.75 * canvas.width;
-		}
-		canvas.width = 0.7 * deviceWidth;
-		canvas.height = 0.75 * canvas.width;
-
-		controls.style.width = (canvas.width).toString() + "px";
-		baseTextSize = "32px";
-	}
-	else if(deviceWidth < 990) {
-		if(available_height < 0.6 * deviceWidth && (4 * available_height) / 3 < 0.6 * deviceWidth) {
-			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
+			canvas.width = canvas.height / ratio;
 		}
 		else {
 			canvas.width = 0.6 * deviceWidth;
-			canvas.height = 0.75 * canvas.width;
+			canvas.height = ratio * canvas.width;
+		}
+
+		controls.style.width = (canvas.width).toString() + "px";
+		baseTextSize = "32px";
+	}
+	else if(deviceWidth < 992) {
+		if(available_height < 0.7 * deviceWidth && available_height / ratio < 0.7 * deviceWidth) {
+			canvas.height = available_height;
+			canvas.width = canvas.height / ratio;
+		}
+		else {
+			canvas.width = 0.7 * deviceWidth;
+			canvas.height = ratio * canvas.width;
+		}
+		canvas.width = 0.7 * deviceWidth;
+		canvas.height = ratio * canvas.width;
+
+		controls.style.width = (canvas.width).toString() + "px";
+		baseTextSize = "32px";
+	}
+	else if(deviceWidth < 1200) {
+		if(available_height < 0.6 * deviceWidth && available_height / ratio < 0.6 * deviceWidth) {
+			canvas.height = available_height;
+			canvas.width = canvas.height / ratio;
+		}
+		else {
+			canvas.width = 0.6 * deviceWidth;
+			canvas.height = ratio * canvas.width;
 		}
 
 		controls.style.width = (canvas.width).toString() + "px";
@@ -148,11 +145,11 @@ function displaySettings(reload, reset, game_settings, ball=null, player1=null, 
 	else {
 		if(available_height < DEFAULT_HEIGHT) {
 			canvas.height = available_height;
-			canvas.width = (4 * canvas.height) / 3;
+			canvas.width = canvas.height / ratio;
 		}
 		else {
 			canvas.width = DEFAULT_WIDTH;
-			canvas.height = DEFAULT_HEIGHT;
+			canvas.height = ratio * canvas.width;
 		}
 
 		controls.style.width = (canvas.width).toString() + "px";
@@ -160,14 +157,14 @@ function displaySettings(reload, reset, game_settings, ball=null, player1=null, 
 	}
 
 	if(reload) {
-		player1.resize(canvas.height / 6, canvas.width / 60);
-		computer.resize(canvas.height / 6, canvas.width / 60);
-		ball.resize(canvas.width / 60);
+		player1.resize();
+		computer.resize();
+		ball.resize(canvas.width / 60, game.ball_speed());
 
-		game_settings.game_started = false;
+		game.started = false;
 
 		if(reset) {
-			reset_game(ball, player1, computer, game_settings);
+			game.reset(ball, player1, computer);
 		}
 	}
 }
@@ -185,70 +182,73 @@ window.onload = function() {
 	// Getting ajusted canvas properties
 	displaySettings(false, false, null);
 
-	DEFAULT_BALL_SPEED = 0.015 * canvas.width;
+	var framesPerSecond = 60;
+	var game = new Game();
+	var ball = new Ball(game.ball_speed());
+	var player1 = new Player('person');
+	var computer = new Player('computer');
 
-	var framesPerSecond = 30;
-	var ball = new Ball();
-	var player1 = new Paddle(0);
-	var computer = new Paddle(canvas.width - 10);
-	var game_settings = new GameSettings();
-
-	displaySettings(true, false, game_settings, ball, player1, computer);
+	displaySettings(true, false, game, ball, player1, computer);
 
 	// Difficulty selection
 	var difficulty_selector = document.getElementById('difficulty');
-	game_settings.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
+	game.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
 
 	// Score selection
 	var score_selector = document.getElementById('max-score');
-	game_settings.winning_score = Number(score_selector[score_selector.selectedIndex].value);
-	game_settings.check_if_disable_endgame();
+	game.winning_score = Number(score_selector[score_selector.selectedIndex].value);
+	game.check_if_disable_endgame();
 
 	setInterval(function() {
-		moveEverything(ball, player1, computer, game_settings);
-		drawEverything(ball, player1, computer, game_settings);
+		game.moveEverything(ball, player1, computer);
+		game.drawEverything(ball, player1, computer);
 	}, 1000/framesPerSecond);
 
 	// Método .addEventListener (http://www.w3schools.com/jsref/met_element_addeventlistener.asp)
 	canvas.addEventListener('mousemove', // http://www.w3schools.com/jsref/dom_obj_event.asp
 		function(evt) {
 			var mousePos = calculateMousePos(evt);
-			if(mousePos.y > player1.height / 2 && mousePos.y < canvas.height - player1.height / 2) {
-				player1.y = mousePos.y - (player1.height / 2);
+			if(game.started) {
+				player1.manual_move(mousePos);
 			}
 		});
 
 	canvas.addEventListener('touchmove', // http://www.w3schools.com/jsref/dom_obj_event.asp
 		function(evt) {
 			var touchPos = calculateTouchPos(evt);
-			if(touchPos.y > player1.height / 2 && touchPos.y < canvas.height - player1.height / 2) {
-				player1.y = touchPos.y - (player1.height / 2);
+			if(game.started) {
+				player1.manual_move(touchPos);
 			}
 		});
 
 	canvas.addEventListener('mousedown', function(evt) {
-		handleMouseClick(evt, player1, computer, game_settings);
+		handleMouseClick(evt, ball, player1, computer, game);
 	});
 
 	window.addEventListener("resize", function(event) {
-		displaySettings(true, true, game_settings, ball, player1, computer);
-		DEFAULT_BALL_SPEED = 0.015 * canvas.width;
+		displaySettings(true, true, game, ball, player1, computer);
 
 		// Makes sure the correct computer paddle height is enabled
-		game_settings.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
+		game.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
+	});
+
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		var target = $(e.target).attr("href"); // activated tab
+
+		game.set_mode(target.substring(1), player1, computer);
+		displaySettings(true, true, game, ball, player1, computer);
 	});
 
 	difficulty_selector.addEventListener('change', function(event) {
-		game_settings.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
+		game.set_difficulty(difficulty_selector[difficulty_selector.selectedIndex].value, computer);
 
 		// When difficulty level is changed, game is reseted
-		game_settings.game_started = false;
-		reset_game(ball, player1, computer, game_settings);
+		game.reset(ball, player1, computer);
 	});
 
 	score_selector.addEventListener('change', function(event) {
-		game_settings.winning_score = Number(score_selector[score_selector.selectedIndex].value);
-		game_settings.check_if_disable_endgame();
+		game.winning_score = Number(score_selector[score_selector.selectedIndex].value);
+		game.check_if_disable_endgame();
 	});
 }
 
@@ -256,26 +256,53 @@ window.onload = function() {
 
 // ---------------- Construtores ----------------
 
-function Ball() {
+function Ball(base_speed) {
 	this.x = 110;
 	this.y = 50;
-	this.x_speed = DEFAULT_BALL_SPEED;
-	this.y_speed = 4;
+	this.default_x_speed = base_speed;
+	this.x_speed = base_speed;
+	this.y_speed = 2;
 	this.size = 10;
+
+	this.scored = function() {
+		return (this.x < 0 || this.x + this.size > canvas.width);
+	}
+
+	this.check_if_hit_paddle = function(paddle) {
+		var ball_right_bound = this.x < (paddle.x + paddle.thickness);
+		var ball_left_bound = paddle.x < (this.x + this.size);
+		var ball_top_bound = (this.y + this.size) > paddle.y;
+		var ball_lower_bound = this.y < (paddle.y + paddle.height);
+
+		return ball_left_bound && ball_right_bound && ball_top_bound && ball_lower_bound;
+	}
+
+	this.handle_paddle_interaction = function(player) {
+		for(i = 0; i < player.num_paddles; i++) {
+			if(this.check_if_hit_paddle(player.paddles[i])) {
+				if(player.mode !== 'tennis' || ((player.type === 'person' && this.x_speed < 0) || (player.type === 'computer' && this.x_speed > 0))) {
+					this.x_speed = -this.x_speed;
+				}
+
+				var deltaY = this.y - (player.paddles[i].y + (player.paddles[i].height / 2));
+				this.y_speed = deltaY * 0.2;
+			}
+		}
+	}
 
 	this.update = function() {
 		this.x += this.x_speed;
 		this.y += this.y_speed;
 
-		if(this.y > canvas.height || this.y < 0) {
+		if(this.y + this.size > canvas.height || this.y < 0) {
 			this.y_speed = -this.y_speed;
 		}
 
 		if(this.x_speed > 0) {
-			this.x_speed += 0.01;
+			this.x_speed += 0.005;
 		}
 		else {
-			this.x_speed -= 0.01;
+			this.x_speed -= 0.005;
 		}
 
 		// if(this.x > canvas.width || this.x < 0) {
@@ -283,23 +310,24 @@ function Ball() {
 		// }
 	}
 
-	this.resize = function(new_size) {
+	this.resize = function(new_size, new_base_speed) {
 		this.size = new_size;
+		this.default_x_speed = new_base_speed;
 	}
 
 	this.reset = function(resize=false) {
-		this.x_speed = DEFAULT_BALL_SPEED * Math.sign(this.x_speed);
+		this.x_speed = this.default_x_speed * Math.sign(this.x_speed);
 		if(!resize) {
 			this.x_speed = -this.x_speed;
 		}
 
-		this.y_speed = getRandomArbitrary(-15 * (canvas.height / DEFAULT_HEIGHT), 15 * (canvas.height / DEFAULT_HEIGHT));
+		this.y_speed = getRandomArbitrary((-15 / 2) * (canvas.height / DEFAULT_HEIGHT), (15 / 2) * (canvas.height / DEFAULT_HEIGHT));
 		this.x = canvas.width / 2;
 		this.y = canvas.height / 2;
 	}
 
 	this.draw = function() {
-		colorRect(this.x - (this.size / 2), this.y - (this.size / 2), this.size, this.size, 'white');
+		colorRect(this.x, this.y, this.size, this.size, 'white');
 	}
 }
 
@@ -308,9 +336,9 @@ function Paddle(x) {
 	this.y = canvas.height / 2;
 	this.height = 100;
 	this.thickness = 10;
-	this.score = 0;
 
-	this.resize = function(new_height, new_thickness) {
+	this.resize = function(new_x, new_height, new_thickness) {
+		this.x = new_x;
 		this.height = new_height;
 		this.thickness = new_thickness;
 
@@ -320,23 +348,133 @@ function Paddle(x) {
 	this.reset = function(x) {
 		this.x = x;
 		this.y = canvas.height / 2;
-		this.score = 0;
 	}
 
-	this.checkIfWon = function(game_settings) {
-		if(this.score >= game_settings.winning_score && !game_settings.disable_endgame) {
-			game_settings.showingWinScreen = true;
-		}
-	}
-
-	this.draw = function(color = 'white') {
+	this.draw = function(color='white') {
 		colorRect(this.x, this.y, this.thickness, this.height, color);
 	}
 }
 
-function GameSettings() {
+
+function Player(type) {
+	this.type = type;
+	this.mode = 'classic';
+	this.num_paddles = 1;
+	this.score = 0;
+	this.paddles = null;
+	this.x = [0, 0];
+	this.paddle_thickness = 10;
+
+	this.setup = function() {
+		this.set_paddle_x_pos();
+
+		this.paddles = [new Paddle(this.x[0]), new Paddle(this.x[1])];
+	};
+
+	this.set_mode = function(mode) {
+		if(mode === 'classic') {
+			this.mode = mode;
+			this.num_paddles = 1;
+		}
+		else if(mode === 'tennis') {
+			this.mode = mode;
+			this.num_paddles = 2;
+		}
+	}
+
+	this.set_paddle_x_pos = function() {
+		var wall_offset = DEFAULT_WALL_OFFSET * (canvas.width / DEFAULT_WIDTH);
+		if(this.type === 'computer') {
+			this.x[0] = canvas.width - this.paddle_thickness - wall_offset;
+			this.x[1] = 0.625 * canvas.width;
+		}
+		else {
+			this.x[0] = wall_offset;
+			this.x[1] = 0.375 * canvas.width;
+		}
+	}
+
+	this.reset = function() {
+		for(i = 0; i < this.paddles.length; i++) {
+			this.paddles[i].reset(this.x[i]);
+		}
+		this.score = 0;
+	}
+
+	this.checkIfWon = function(game) {
+		if(this.score >= game.winning_score && !game.disable_endgame) {
+			game.showingWinScreen = true;
+		}
+	}
+
+	this.resize = function() {
+		this.paddle_thickness = canvas.width / 60;
+		var paddle_height = canvas.height / 6;
+
+		this.set_paddle_x_pos();
+
+		for(i = 0; i < this.paddles.length; i++) {
+			this.paddles[i].resize(this.x[i], paddle_height, this.paddle_thickness);
+		}
+	}
+
+	this.draw = function() {
+		for(i = 0; i < this.num_paddles; i++) {
+			this.paddles[i].draw();
+		}
+	}
+
+	this.manual_move = function(cursor) {
+		if(cursor.y > this.paddles[0].height / 2 && cursor.y < canvas.height - this.paddles[0].height / 2) {
+			this.paddles[0].y = cursor.y - (this.paddles[0].height / 2);
+		}
+
+		if(this.mode === 'tennis') {
+			this.paddles[1].y = canvas.height - (this.paddles[0].height + this.paddles[0].y); 
+		}
+	}
+
+	this.auto_move = function(ball, game) {
+		var variability = (this.type === 'person') ? 1.05 : 1;
+		var computerYCenter = this.paddles[0].y + (this.paddles[0].height / 2);
+
+		if(computerYCenter < ball.y - ((this.paddles[0].height / 2)) * 0.35 && this.paddles[0].y + this.paddles[0].height < canvas.height) {
+			this.paddles[0].y += variability * game.computer_speed() * this.paddles[0].height;
+		}
+		else if(computerYCenter > ball.y + ((this.paddles[0].height / 2)) * 0.35 && this.paddles[0].y > 0) {
+			this.paddles[0].y -= variability * game.computer_speed() * this.paddles[0].height;
+		}
+
+		if(this.mode === 'tennis') {
+			this.paddles[1].y = canvas.height - (this.paddles[0].height + this.paddles[0].y); 
+		}
+	}
+
+	// Execute on constructor instantiation;
+	this.setup();
+}
+
+function Game() {
 	this.difficulty = 1;
-	this.game_started = false;
+	this.mode = 'classic';
+	this.mode_info = {
+		"classic": {
+			"game_name": "Pong",
+			"background_color": "black",
+			"canvas_ratio": 0.75  // 3 by 4 aspect ratio
+		},
+		"tennis": {
+			"game_name": "Pong Tennis",
+			"background_color": "#A73202",
+			"canvas_ratio": 0.625  // 1 by 2 aspect ratio
+		},
+		"football": {
+			"game_name": "Pong Soccer",
+			"background_color": "#008000",
+			"canvas_ratio": 0.64  // 16 by 25 aspect ratio
+		}
+	}
+	this.started = false;
 	this.winning_score = 5;
 	this.disable_endgame = false;
 	this.showingWinScreen = false;
@@ -356,7 +494,11 @@ function GameSettings() {
 		}
 	}
 
-	this.reset = function() {
+	this.reset = function(ball, player1, computer) {
+		ball.reset(true);
+		player1.reset();
+		computer.reset();
+
 		this.showingWinScreen = false;
 	}
 
@@ -364,8 +506,16 @@ function GameSettings() {
 		this.disable_endgame = this.winning_score === 0;  // if-else
 	}
 
+	this.set_mode = function(mode, player1, computer) {
+		player1.set_mode(mode);
+		computer.set_mode(mode);
+
+		this.mode = mode;
+		this.started = false;
+	}
+
 	this.ball_speed = function() {
-		// to be defined
+		return 0.0075 * canvas.width;
 	}
 
 	this.computer_speed = function() {
@@ -373,162 +523,149 @@ function GameSettings() {
 
 		switch(this.difficulty) {
 			case 1:
-				speed = 0.06;
+				speed = 0.04;
 				break;
 
 			case 2:
-				speed = 0.08;
+				speed = 0.06;
 				break;
 
 			case 3:
-				speed = 0.1;
+				speed = 0.08;
 				break;
 
 			default:
-				speed = 0.08;
+				speed = 0.06;
 				break;
 		}
 		return speed;
+	}
+
+	this.drawFieldLines = function() {
+		if(this.mode === 'classic') {
+			for(var i = 0; i < canvas.height; i += 40) {
+				colorRect((canvas.width / 2) - 1, i, 2, 20, 'white');
+			}
+		}
+
+		if(this.mode === 'tennis') {
+			for(var i = 0; i < canvas.height; i += 30) {
+				colorRect((canvas.width / 2) - 1, i, 2, 15, 'white');
+			}
+			colorRect(0, (0.125 * canvas.height) - 1, canvas.width, 2, 'white');
+			colorRect(0.25 * canvas.width, 0.125 * canvas.height, 2, 0.75 * canvas.height, 'white');
+			colorRect(0.25 * canvas.width, (canvas.height / 2) - 1, 0.5 * canvas.width, 2, 'white');
+			colorRect(0.75 * canvas.width, 0.125 * canvas.height, 2, 0.75 * canvas.height, 'white');
+			colorRect(0, (0.875 * canvas.height) - 1, canvas.width, 2, 'white');
+		}
+	}
+
+	this.moveEverything = function(ball, player1, computer) {
+		if(this.showingWinScreen) {
+			return;
+		}
+
+		if(!this.started) {
+			player1.auto_move(ball, this);
+		}
+
+		computer.auto_move(ball, this);
+
+		ball.update();
+
+		ball.handle_paddle_interaction(player1);
+		ball.handle_paddle_interaction(computer);
+
+		if(ball.scored()) {
+			if(ball.x < canvas.width / 2) {
+				computer.score++; // must be BEFORE ball.reset()
+				if(this.started) { computer.checkIfWon(this); }
+			}
+			else {
+				player1.score++; // must be BEFORE ball.reset()
+				if(this.started) { player1.checkIfWon(this); }
+			}
+			ball.reset();
+		}
+	}
+
+	this.drawEverything = function(ball, player1, computer) {
+		// next line blanks out the screen with black
+		colorRect(0, 0, canvas.width, canvas.height, this.mode_info[this.mode]["background_color"]);
+
+		canvasContext.font = baseTextSize + " Bit5x3";
+		canvasContext.textAlign = "center";
+
+		if(isTouchScreen()) {
+			var interaction = "toque";
+		} else {
+			var interaction = "clique";
+		}
+
+		if(!this.started) {
+			canvasContext.fillStyle = 'white';
+			var title = this.mode_info[this.mode]["game_name"];
+			var deviceWidth = document.documentElement.clientWidth;
+
+			if(title.split(" ").length > 1 && deviceWidth < 450) {
+				canvasContext.font = "48px Bit5x3";
+				canvasContext.fillText(title.split(" ")[0], (canvas.width) / 2, (canvas.height / 6) + 10);
+				canvasContext.fillText(title.split(" ")[1], (canvas.width) / 2, (canvas.height / 3) + 20);
+			}
+			else {
+				canvasContext.font = "64px Bit5x3";
+				canvasContext.fillText(title, (canvas.width) / 2, canvas.height / 3);
+			}
+
+			canvasContext.font = "20px Bit5x3";
+			canvasContext.fillText(interaction + " para comecar", (canvas.width / 2), 5 * canvas.height / 6);
+
+			// return;
+		}
+
+		if(this.showingWinScreen) {
+			win_text = "Voce ganhou!!";
+			lose_text = "Voce perdeu =(";
+
+			canvasContext.fillStyle = 'white';
+
+			if(player1.score > computer.score) {
+				canvasContext.fillText(win_text, (canvas.width) / 2, canvas.height / 3);
+			}
+			else {
+				canvasContext.fillText(lose_text, (canvas.width) / 2, canvas.height / 3);
+			}
+
+			canvasContext.fillText(interaction + " para reiniciar", (canvas.width) / 2, 5 * canvas.height / 6);
+			return;
+		}
+
+		this.drawFieldLines();
+
+		// this is left player paddle
+		player1.draw();
+
+		// this is left computer paddle
+		computer.draw();
+
+		// next line draws the ball
+		ball.draw();
+
+		var score_height = (this.mode === 'tennis') ? canvas.height / 10 : canvas.height / 6;
+
+		// player and computer scores
+		canvasContext.fillText(player1.score, 100 * (canvas.width / DEFAULT_WIDTH), score_height);
+		canvasContext.fillText(computer.score, (DEFAULT_WIDTH - 100) * (canvas.width / DEFAULT_WIDTH), score_height);
 	}
 }
 
 // ------------- /Construtores -------------
 
-
-function computerMovement(ball, computer, game_settings) {
-	var computerYCenter = computer.y + (computer.height / 2);
-
-	if(computerYCenter < ball.y - ((computer.height / 2)) * 0.35 && computer.y + computer.height < canvas.height) {
-		computer.y += game_settings.computer_speed() * computer.height;
-	} else if(computerYCenter > ball.y + ((computer.height / 2)) * 0.35 && computer.y > 0) {
-		computer.y -= game_settings.computer_speed() * computer.height;
-	}
-}
-
-function moveEverything(ball, player1, computer, game_settings) {
-	if(!game_settings.game_started || game_settings.showingWinScreen) {
-		return;
-	}
-
-	computerMovement(ball, computer, game_settings);
-
-	ball.update();
-
-	if(ball.x < player1.thickness) {
-		if(ball.y > player1.y && ball.y < (player1.y + player1.height)) {
-			ball.x_speed = -ball.x_speed;
-
-			var deltaY = ball.y - (player1.y + (player1.height / 2));
-			ball.y_speed = deltaY * 0.35;
-
-		} else {
-
-			computer.score++; // must be BEFORE ball.reset()
-			computer.checkIfWon(game_settings);
-
-			ball.reset();
-		}
-	}
-
-	if(ball.x > canvas.width - computer.thickness) {
-		if(ball.y > computer.y && ball.y < (computer.y + computer.height)) {
-			ball.x_speed = -ball.x_speed;
-
-			var deltaY = ball.y - (computer.y + (computer.height / 2));
-			ball.y_speed = deltaY * 0.35;
-
-		} else {
-
-			player1.score++; // must be BEFORE ball.reset()
-			player1.checkIfWon(game_settings);
-
-			ball.reset();
-		}
-	}
-
-	// console.log(ball.x_speed);
-}
-
-function drawEverything(ball, player1, computer, game_settings) {
-	// next line blanks out the screen with black
-	colorRect(0, 0, canvas.width, canvas.height, 'black');
-
-	canvasContext.font = baseTextSize + " Bit5x3";
-	canvasContext.textAlign = "center";
-
-	if(isTouchScreen()) {
-		var interaction = "toque";
-	} else {
-		var interaction = "clique";
-	}
-
-	if(!game_settings.game_started) {
-		canvasContext.fillStyle = 'white';
-		canvasContext.font = "64px Bit5x3";
-		canvasContext.fillText("Pong", (canvas.width) / 2, canvas.height / 3);
-
-		canvasContext.font = "20px Bit5x3";
-		canvasContext.fillText(interaction + " para comecar", (canvas.width / 2), 5 * canvas.height / 6);
-
-		return;
-	}
-
-	if(game_settings.showingWinScreen) {
-		win_text = "Voce ganhou!!";
-		lose_text = "Voce perdeu =(";
-
-		canvasContext.fillStyle = 'white';
-
-		if(player1.score > computer.score) {
-			canvasContext.fillText(win_text, (canvas.width) / 2, canvas.height / 3);
-		}
-		else {
-			canvasContext.fillText(lose_text, (canvas.width) / 2, canvas.height / 3);
-		}
-
-		canvasContext.fillText(interaction + " para reiniciar", (canvas.width) / 2, 5 * canvas.height / 6);
-		return;
-	}
-
-	drawNet();
-
-	// this is left player paddle
-	player1.draw();
-
-	// this is left computer paddle
-	computer.draw();
-
-	// next line draws the ball
-	ball.draw();
-
-	// 2 digits offset
-	var player_score_draw_offset = 0;
-	if(player1.score < 10) {
-		player_score_draw_offset = 30;
-	}
-	var computer_score_draw_offset = 0;
-	if(computer.score >= 10) {
-		computer_score_draw_offset = 30;
-	}
-
-	// player and computer scores
-	canvasContext.fillText(player1.score, (70 + player_score_draw_offset) * (canvas.width / DEFAULT_WIDTH), canvas.height / 6);
-	canvasContext.fillText(computer.score, (DEFAULT_WIDTH - (100 + computer_score_draw_offset)) * (canvas.width / DEFAULT_WIDTH), canvas.height / 6);
-
-}
-
-
-// ---------- Funções auxiliares ----------
+// ---------- Auxiliary Functions ----------
 
 function getRandomArbitrary(min, max) {
 	// https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 	return Math.random() * (max - min) + min;
-}
-
-function drawNet() {
-	for(var i = 0; i < canvas.height; i += 40) {
-		colorRect((canvas.width / 2) -1, i, 2, 20, 'white');
-	}
 }
 
 function colorRect(leftX, topX, width, height, drawColor) {

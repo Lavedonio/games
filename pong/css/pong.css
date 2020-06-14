@@ -17,3 +17,15 @@ canvas {
 .game {
 	margin-top: 0.5rem;
 }
+
+.classic, .classic:hover {
+	color: gray!important;
+}
+
+.tennis, .tennis:hover {
+	color: red!important;
+}
+
+.football, .football:hover {
+	color: green!important;
+}
